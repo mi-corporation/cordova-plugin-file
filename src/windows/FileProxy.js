@@ -809,6 +809,12 @@ module.exports = {
         var fspath = sanitize(dirpath + '/' + path);
         var completePath = sanitize(fs.winpath + fspath);
 
+        // Tolerate a trailing slash on directory paths by removing it before splitting into
+        // name and wpath. Otherwise we end up looking for a subdirectory named the empty string.
+        if (completePath.length > 0 && completePath[completePath.length - 1] === '/') {
+            completePath = completePath.slice(0, -1);
+        }
+
         var name = completePath.substring(completePath.lastIndexOf('/') + 1);
 
         var wpath = cordovaPathToNative(completePath.substring(0, completePath.lastIndexOf('/')));
