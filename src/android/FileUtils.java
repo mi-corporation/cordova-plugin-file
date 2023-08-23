@@ -113,12 +113,23 @@ public class FileUtils extends CordovaPlugin {
      * Refer to: https://developer.android.com/about/versions/13/behavior-changes-13
      */
 
+    /*
+     * Since Mi-Corporation uses cordova-android version 8.0.0 which only supports up to version 28
+     * of the Android SDK, we must manually declare the new Manifest.permission constant values that were
+     * introduced later as well as the latest build constant.
+    */
+    private static final String MANIFEST_PERMISSION_READ_MEDIA_IMAGES = "android.permission.READ_MEDIA_IMAGES";
+    private static final String MANIFEST_PERMISSION_READ_MEDIA_VIDEO = "android.permission.READ_MEDIA_VIDEO";
+    private static final String MANIFEST_PERMISSION_READ_MEDIA_AUDIO = "android.permission.READ_MEDIA_AUDIO";
+    private static final int BUILD_VERSION_CODES_TIRAMISU = 33;
+
+
     private String [] permissions = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_MEDIA_IMAGES,
-            Manifest.permission.READ_MEDIA_VIDEO,
-            Manifest.permission.READ_MEDIA_AUDIO};
+            MANIFEST_PERMISSION_READ_MEDIA_IMAGES,
+            MANIFEST_PERMISSION_READ_MEDIA_VIDEO,
+            MANIFEST_PERMISSION_READ_MEDIA_AUDIO};
 
     // This field exists only to support getEntry, below, which has been deprecated
     private static FileUtils filePlugin;
@@ -574,9 +585,9 @@ public class FileUtils extends CordovaPlugin {
 
     private void getReadPermission(String rawArgs, int action, CallbackContext callbackContext) {
         int requestCode = pendingRequests.createRequest(rawArgs, action, callbackContext);
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (android.os.Build.VERSION.SDK_INT >= BUILD_VERSION_CODES_TIRAMISU) {
             PermissionHelper.requestPermissions(this, requestCode, 
-            new String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_AUDIO});
+            new String[]{MANIFEST_PERMISSION_READ_MEDIA_IMAGES, MANIFEST_PERMISSION_READ_MEDIA_VIDEO, MANIFEST_PERMISSION_READ_MEDIA_AUDIO});
           } else {
             PermissionHelper.requestPermission(this, requestCode, Manifest.permission.READ_EXTERNAL_STORAGE);
           }
@@ -588,10 +599,10 @@ public class FileUtils extends CordovaPlugin {
     }
 
     private boolean hasReadPermission() {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            return PermissionHelper.hasPermission(this, Manifest.permission.READ_MEDIA_IMAGES) 
-            && PermissionHelper.hasPermission(this, Manifest.permission.READ_MEDIA_VIDEO)
-            && PermissionHelper.hasPermission(this, Manifest.permission.READ_MEDIA_AUDIO);
+        if (android.os.Build.VERSION.SDK_INT >= BUILD_VERSION_CODES_TIRAMISU) {
+            return PermissionHelper.hasPermission(this, MANIFEST_PERMISSION_READ_MEDIA_IMAGES) 
+            && PermissionHelper.hasPermission(this, MANIFEST_PERMISSION_READ_MEDIA_VIDEO)
+            && PermissionHelper.hasPermission(this, MANIFEST_PERMISSION_READ_MEDIA_AUDIO);
           } else {
         return PermissionHelper.hasPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
           }
